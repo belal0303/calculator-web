@@ -6,7 +6,7 @@ HTML = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ABC Technologies Calculator</title>
+    <title>Onedata calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -101,4 +101,6 @@ def calculator():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
 
-    
+
+
+
