@@ -27,6 +27,7 @@ pipeline {
             steps {
                 sh '''
                     docker rm -f calculator-container calculator-containers || true
+
                     docker run -d \
                       --name calculator-container \
                       -p 5000:5000 \
@@ -37,7 +38,15 @@ pipeline {
 
         stage('Application Verification') {
             steps {
-                sh 'curl --retry 10 --retry-connrefused --retry-delay 2 -fsS http://localhost:5000/'
+                sh '''
+                    curl --retry 10 \
+                         --retry-all-errors \
+                         --retry-delay 2 \
+                         --retry-max-time 30 \
+                         -fsS -o /dev/null \
+                         http://localhost:5000/
+                '''
+
                 echo 'Application deployed successfully!'
             }
         }
