@@ -42,7 +42,7 @@ HTML = """
 </head>
 <body>
     <div class="calculator">
-        <h2>ABC Technologies</h2>
+        <h2>Onedata</h2>
         <h3>Simple Calculator</h3>
 
         <form method="POST">
