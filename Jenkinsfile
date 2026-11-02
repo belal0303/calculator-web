@@ -1,8 +1,11 @@
 pipeline {
     agent any
 
-    stages {
+    tools {
+        sonarQubeScanner 'SonarScanner'
+    }
 
+    stages {
         stage('GitHub Checkout') {
             steps {
                 checkout scm
@@ -17,6 +20,20 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=calculator-web \
+                          -Dsonar.projectName="Calculator Web" \
+                          -Dsonar.sources=. \
+                          -Dsonar.exclusions=venv/**,__pycache__/**
+                    '''
+                }
+            }
+        }
+
         stage('Docker Build') {
             steps {
                 sh 'docker build -t calculator-app:${BUILD_NUMBER} .'
@@ -27,7 +44,6 @@ pipeline {
             steps {
                 sh '''
                     docker rm -f calculator-container calculator-containers || true
-
                     docker run -d \
                       --name calculator-container \
                       -p 5000:5000 \
@@ -46,7 +62,6 @@ pipeline {
                          -fsS -o /dev/null \
                          http://localhost:5000/
                 '''
-
                 echo 'Application deployed successfully!'
             }
         }
