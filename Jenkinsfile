@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        sonarRunner 'SonarScanner'
-    }
-
     stages {
         stage('GitHub Checkout') {
             steps {
@@ -22,14 +18,21 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=calculator-web \
-                          -Dsonar.projectName="Calculator Web" \
-                          -Dsonar.sources=. \
-                          -Dsonar.exclusions=venv/**,__pycache__/**
-                    '''
+                script {
+                    def scannerHome = tool(
+                        name: 'SonarScanner',
+                        type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    )
+
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                              -Dsonar.projectKey=calculator-web \
+                              -Dsonar.projectName="Calculator Web" \
+                              -Dsonar.sources=. \
+                              -Dsonar.exclusions=venv/**,__pycache__/**
+                        """
+                    }
                 }
             }
         }
